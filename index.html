@@ -1,0 +1,17 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="/static/css/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+	<form action="/guest" method="POST">
+		<input type="text" name="content">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+	<h1>Your Messages</h1>
+	{% for message in messages %}
+	  {{message.message | escape}}
+	  <br><hr>
+	{% endfor %}
+</body>
+</html>
