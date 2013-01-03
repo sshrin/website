@@ -3,6 +3,10 @@ import cgi
 import jinja2
 import os
 
+import config
+
+from web.sessions import BaseSessionHandler
+
 from google.appengine.api import users
 from google.appengine.ext import db
 
@@ -33,36 +37,26 @@ def get_messages():
 	# 	message_string = message_string + message.message + '<br><hr>'
 	# return message_string	
 
-class MainHandler(webapp2.RequestHandler):
+class MainHandler(BaseSessionHandler):
     def get(self):
     	user = users.get_current_user()
-
+        template = jinja_environment.get_template('templates/index.html')
     	if user:
     		template_values = {
-    			"messages" : get_messages()
+    			"messages" : get_messages(),
+                "sign_in_link" : users.create_logout_url(self.request.uri),
+                "sign_in_text" : "Sign Out"
     		}
-
-    		template = jinja_environment.get_template('index.html')
     		self.response.write(template.render(template_values))
-    		# output = """
-    		# <html>
-    		# 	<body>
-    		# 	    <h1>Hi {0}!</h1>
-    		# 		<form action="/guest" method="post">
-    		# 	      	<input type="text" name="content">
-    		# 	      	<br>
-    		# 	      	<input type="submit" value="Submit">
-    		# 	    </form>
-    		# 	    <br><hr><br>
-    		# 	    The current values are: {1}
-    		# 	</body>
-    		# </html>
-    	 # 	"""
-    	 # 	self.response.write(output.format(user.email(), get_messages()))
     	else:
-    		self.redirect(users.create_login_url(self.request.uri))
+            template_values = {
+                "messages" : get_messages(),
+                "sign_in_link" : users.create_login_url(self.request.uri),
+                "sign_in_text" : "Sign In"
+            }
+            self.response.write(template.render(template_values))
 
-class GuestHandler(webapp2.RequestHandler):
+class GuestHandler(BaseSessionHandler):
 	def post(self):
 		create_message(cgi.escape(self.request.get('content')))
 		self.redirect('/')
@@ -71,4 +65,4 @@ class GuestHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/guest', GuestHandler)
-], debug=True)
+], debug=True, config=config.config_dict)

@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+	<script type="text/javascript" src="/static/js/jquery-1.8.3.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="/static/css/bootstrap/css/bootstrap.min.css">
+	<script type="text/javascript" src="/static/css/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="navbar">
+		<div class="navbar-inner">
+			<a class="brand" href="/">Shrikrishna Shrin</a>
+			<ul class="nav">
+				<li class="active"><a href="#">Home</a></li>
+			</ul>
+			<ul class="nav pull-right">
+				<li><a href="{{ sign_in_link }}">{{ sign_in_text }}</a></li>
+			</ul>
+		</div>
+	</div>
+	<form action="/guest" method="POST">
+		<input type="text" name="content">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+	<h1>Your Messages</h1>
+	{% for message in messages %}
+	{{message.message | escape}}
+	<br><hr>
+	{% endfor %}
+</body>
+</html>
